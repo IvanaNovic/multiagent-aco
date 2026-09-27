@@ -1,4 +1,5 @@
 import random
+from src.ant import Ant
 class Colony:
     def __init__(self, colony_id, num_ants, alpha=1.0, beta=3.0, rho=0.5):
         self.colony_id = colony_id
@@ -31,6 +32,24 @@ class Colony:
         probabilities = [w / total for w in weights]
 
         return random.choices(unvisited, weights=probabilities, k=1)[0]
+
+    def construct_tour(self, start_city, graph):
+        """Konstruisanje kompletne ture jednog mrava, pocevsi od start_city"""
+        ant = Ant(start_city)
+        unvisited = [c for c, _, _ in graph.cities if c != start_city]
+
+        while unvisited:
+            next_city = self.select_next_city(ant.current_node, unvisited, graph)
+            distance = graph.distance(ant.current_node, next_city)
+            ant.visit(next_city, distance)
+            unvisited.remove(next_city)
+
+        # zatvaranje ture - povratak na pocetni grad
+        closing_distance = graph.distance(ant.current_node, start_city)
+        ant.tour_length += closing_distance
+
+        return ant
+
 
     def __repr__(self):
         return (f"Colony({self.colony_id}, ants={self.num_ants}, "
