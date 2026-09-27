@@ -8,6 +8,14 @@ class Colony:
         self.ants = []
         self.best_tour_length = float("inf")
         self.best_tour = None
+        self.pheromones = {}
+
+    def init_pheromones(self, graph, initial_value=1.0):
+        """Inicijalizacija feromona na svim ivicama grafa na pocetnu vrijednost."""
+        for city_a, _, _ in graph.cities:
+            for city_b, _, _ in graph.cities:
+                if city_a != city_b:
+                    self.pheromones[(city_a, city_b)] = initial_value
 
     def __repr__(self):
         return (f"Colony({self.colony_id}, ants={self.num_ants}, "
