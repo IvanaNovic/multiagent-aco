@@ -50,6 +50,32 @@ class Colony:
 
         return ant
 
+    def update_pheromones(self, ants, graph):
+        """Isparavanje feromona na svim ivicama, zatim depozit na osnovu tura mrava"""
+        # isparavanje
+        for edge in self.pheromones:
+            self.pheromones[edge] *= (1 - self.rho)
+
+        # depozit - svaki mrav ostavlja feromon proporcionalan kvalitetu ture
+        for ant in ants:
+            deposit = 1.0 / ant.tour_length
+            for i in range(len(ant.visited) - 1):
+                city_a = ant.visited[i]
+                city_b = ant.visited[i + 1]
+                self.pheromones[(city_a, city_b)] += deposit
+                self.pheromones[(city_b, city_a)] += deposit
+
+            # zatvaranje ture 
+            first_city = ant.visited[0]
+            last_city = ant.visited[-1]
+            self.pheromones[(last_city, first_city)] += deposit
+            self.pheromones[(first_city, last_city)] += deposit
+
+            # azuriranje najbolje ture kolonije
+            if ant.tour_length < self.best_tour_length:
+                self.best_tour_length = ant.tour_length
+                self.best_tour = ant.visited
+
 
     def __repr__(self):
         return (f"Colony({self.colony_id}, ants={self.num_ants}, "
