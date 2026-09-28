@@ -12,14 +12,17 @@ class Simulation:
             colony.init_pheromones(graph)
             self.colonies.append(colony)
 
+    def _run_ants_for_colony(self, colony, start_city):
+        ants= [colony.construct_tour(start_city, self.graph)
+                for _ in range(colony.num_ants)]
+        colony.update_pheromones(ants, self.graph)
+
     def run_independent(self):
         start_city = self.graph.cities[0][0]
 
         for iteration in range(self.num_iterations):
             for colony in self.colonies:
-                ants = [colony.construct_tour(start_city, self.graph)
-                        for _ in range(colony.num_ants)]
-                colony.update_pheromones(ants, self.graph)
+                self._run_ants_for_colony(colony, start_city)
 
         return self.colonies
 
@@ -28,9 +31,7 @@ class Simulation:
 
         for iteration in range(self.num_iterations):
             for colony in self.colonies:
-                ants = [colony.construct_tour(start_city, self.graph)
-                        for _ in range(colony.num_ants)]
-                colony.update_pheromones(ants, self.graph)
+                self._run_ants_for_colony(colony, start_city)
 
             if (iteration + 1) % exchange_interval == 0:
                 self._exchange_pheromones()
