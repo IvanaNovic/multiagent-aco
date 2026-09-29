@@ -69,12 +69,16 @@ def animate_pheromones(graph, snapshots, colony, save_path="results/pheromone_an
     def update(frame_index):
         ax.clear()
         pheromones = snapshots[frame_index]
+        values = list(pheromones.values())
+        max_pheromone = max(values)
+        min_pheromone = min(values)
+        spread = max_pheromone - min_pheromone if max_pheromone != min_pheromone else 1.0
 
         for (city_a, city_b), tau in pheromones.items():
             if city_a < city_b:
                 x1, y1 = coords[city_a]
                 x2, y2 = coords[city_b]
-                intensity = tau / max_pheromone
+                intensity = (tau - max_pheromone) / spread
                 linewidth = 0.3 + intensity * 5.7
                 ax.plot([x1, x2], [y1, y2], color="darkorange",
                          alpha=min(intensity + 0.1, 1.0), linewidth=linewidth, zorder=1)
