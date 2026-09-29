@@ -19,3 +19,42 @@ def plot_convergence(colonies, save_path=None):
         print(f"Grafik sacuvan: {save_path}")
     else:
         plt.show()
+
+def plot_pheromones(graph, colony, save_path=None, min_linewidth=0.3, max_linewidth=6.0):
+
+    plt.figure(figsize=(10, 10))
+
+    coords = {city_id: (x, y) for city_id, x, y in graph.cities}
+
+    pheromone_values = list(colony.pheromones.values())
+    max_pheromone = max(pheromone_values) if pheromone_values else 1.0
+
+    for (city_a, city_b), tau in colony.pheromones.items():
+        if city_a < city_b:
+            x1, y1 = coords[city_a]
+            x2, y2 = coords[city_b]
+
+            intensity = tau / max_pheromone
+            linewidth = min_linewidth + intensity * (max_linewidth - min_linewidth)
+
+            plt.plot([x1, x2], [y1, y2],
+                     color="darkorange", alpha=min(intensity + 0.1, 1.0),
+                     linewidth=linewidth, zorder=1)
+
+    for city_id, (x, y) in coords.items():
+        plt.scatter(x, y, color="steelblue", s=100, zorder=2)
+        plt.annotate(str(city_id), (x, y), textcoords="offset points",
+                     xytext=(5, 5), fontsize=9)
+
+    plt.title(f"Feromoni - Kolonija {colony.colony_id} "
+              f"(a={colony.alpha}, b={colony.beta}, r={colony.rho})")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+
+    if save_path:
+        plt.savefig(save_path)
+        print(f"Grafik sacuvan: {save_path}")
+    else:
+        plt.show()
+
+    plt.close()
