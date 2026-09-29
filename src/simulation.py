@@ -1,4 +1,5 @@
 from src.colony import Colony
+import copy
 
 class Simulation:
     def __init__(self, graph, colony_configs, num_iterations=100):
@@ -32,7 +33,6 @@ class Simulation:
         for iteration in range(self.num_iterations):
             for colony in self.colonies:
                 self._run_ants_for_colony(colony, start_city)
-
             if (iteration + 1) % exchange_interval == 0:
                 self._exchange_pheromones()
 
@@ -55,3 +55,18 @@ class Simulation:
               f"sa turom {best_colony.best_tour_length:.2f}")
 
         return self.colonies, best_colony
+
+    def run_with_snapshots(self, colony_index=0, snapshot_interval=5):
+
+        colony = self.colonies[colony_index]
+        start_city = self.graph.cities[0][0]
+        snapshots = []
+
+        for iteration in range(self.num_iterations):
+            self._run_ants_for_colony(colony, start_city)
+
+            if iteration % snapshot_interval == 0:
+                snapshots.append(copy.deepcopy(colony.pheromones))
+
+        snapshots.append(copy.deepcopy(colony.pheromones))  # finalno stanje
+        return colony, snapshots
