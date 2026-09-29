@@ -64,8 +64,6 @@ def animate_pheromones(graph, snapshots, colony, save_path="results/pheromone_an
     fig, ax = plt.subplots(figsize=(10, 10))
     coords = {city_id: (x, y) for city_id, x, y in graph.cities}
 
-    max_pheromone = max(max(s.values()) for s in snapshots)
-
     def update(frame_index):
         ax.clear()
         pheromones = snapshots[frame_index]
@@ -78,10 +76,11 @@ def animate_pheromones(graph, snapshots, colony, save_path="results/pheromone_an
             if city_a < city_b:
                 x1, y1 = coords[city_a]
                 x2, y2 = coords[city_b]
-                intensity = (tau - max_pheromone) / spread
+                intensity = (tau - min_pheromone) / spread
+                intensity = max(0.0, min(1.0, intensity))
                 linewidth = 0.3 + intensity * 5.7
                 ax.plot([x1, x2], [y1, y2], color="darkorange",
-                         alpha=min(intensity + 0.1, 1.0), linewidth=linewidth, zorder=1)
+                        alpha=max(0.0, min(intensity + 0.1, 1.0)), linewidth=linewidth, zorder=1)
 
         for city_id, (x, y) in coords.items():
             ax.scatter(x, y, color="steelblue", s=100, zorder=2)
