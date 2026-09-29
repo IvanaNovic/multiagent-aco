@@ -11,6 +11,7 @@ class Colony:
         self.best_tour_length = float("inf")
         self.best_tour = None
         self.pheromones = {}
+        self.history= []
 
     def init_pheromones(self, graph, initial_value=1.0):
         """Inicijalizacija feromona na svim ivicama grafa na pocetnu vrijednost."""
@@ -75,6 +76,8 @@ class Colony:
             if ant.tour_length < self.best_tour_length:
                 self.best_tour_length = ant.tour_length
                 self.best_tour = ant.visited
+
+        self.history.append(self.best_tour_length)
 
 
     def __repr__(self):
